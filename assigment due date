@@ -1,0 +1,45 @@
+from datetime import datetime, timedelta
+
+# iCalendar template with word count in event names
+ical_template = """BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+PRODID:-//Leadership for Growth//EN
+{events}
+END:VCALENDAR
+"""
+
+event_template = """BEGIN:VEVENT
+SUMMARY:{summary}
+DTSTART;TZID=Australia/Adelaide:{dtstart}
+DTEND;TZID=Australia/Adelaide:{dtend}
+DTSTAMP:{dtstamp}
+UID:{uid}@leadership-growth
+END:VEVENT
+"""
+
+# Define assessments with word count and due dates
+assessments = [
+    ("Reflective Report (3000 words)", "2025-06-22T23:59:00"),
+    ("Video Presentation (15 mins, team project)", "2025-07-28T23:59:00")
+]
+
+# Generate event entries
+events_str = ""
+for i, (title, date_str) in enumerate(assessments):
+    dt = datetime.fromisoformat(date_str)
+    dtstart = dt.strftime('%Y%m%dT%H%M%S')
+    dtend = (dt + timedelta(minutes=1)).strftime('%Y%m%dT%H%M%S')
+    dtstamp = datetime.now().strftime('%Y%m%dT%H%M%S')
+    uid = f"assess{i+1}"
+    events_str += event_template.format(summary=title, dtstart=dtstart, dtend=dtend, dtstamp=dtstamp, uid=uid)
+
+# Final .ics content
+ical_content = ical_template.format(events=events_str)
+
+# Save to file
+calendar_path = "/mnt/data/Leadership_Assessments_With_Wordcount.ics"
+with open(calendar_path, "w") as f:
+    f.write(ical_content)
+
+calendar_path
